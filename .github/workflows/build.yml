@@ -27,7 +27,7 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller --onefile --windowed --icon=solsticelogs.ico --add-data "solsticelogs.ico;." src/MetaTagBackoffGui.py
+        pyinstaller --onefile --windowed --icon=src/solsticelogs.ico --add-data "src/solsticelogs.ico;." src/MetaTagBackoffGui.py
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
