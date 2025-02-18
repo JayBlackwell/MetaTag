@@ -28,8 +28,9 @@ jobs:
     - name: Build executable
       shell: cmd
       run: |
-        dir src
-        pyinstaller --onefile --windowed --icon="./src/solsticelogs.ico" --add-data "./src/solsticelogs.ico;." src/MetaTagBackoffGui.py
+        echo "Current directory: %CD%"
+        echo "Building with full path to icon"
+        pyinstaller --onefile --windowed --icon="%CD%\src\solsticelogs.ico" --add-data "%CD%\src\solsticelogs.ico;." src/MetaTagBackoffGui.py
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
