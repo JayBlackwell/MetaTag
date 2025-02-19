@@ -64,5 +64,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: MetaTag-macOS
+        name: MetaTag-macOS-pkg
         path: dist/MetaTag.pkg
