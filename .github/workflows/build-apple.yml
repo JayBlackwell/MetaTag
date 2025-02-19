@@ -1,0 +1,104 @@
+name: Build Apple App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+
+    - name: Create macOS spec file
+      run: |
+        echo '# -*- mode: python ; coding: utf-8 -*-
+
+        block_cipher = None
+
+        a = Analysis(
+            ["src/MetaTagBackoffGui.py"],
+            pathex=[],
+            binaries=[],
+            datas=[("src/solsticelogo.ico", ".")],
+            hiddenimports=[],
+            hookspath=[],
+            hooksconfig={},
+            runtime_hooks=[],
+            excludes=[],
+            win_no_prefer_redirects=False,
+            win_private_assemblies=False,
+            cipher=block_cipher,
+            noarchive=False,
+        )
+
+        pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+        exe = EXE(
+            pyz,
+            a.scripts,
+            a.binaries,
+            a.zipfiles,
+            a.datas,
+            [],
+            name="MetaTagBackoffGui",
+            debug=False,
+            bootloader_ignore_signals=False,
+            strip=False,
+            upx=True,
+            upx_exclude=[],
+            runtime_tmpdir=None,
+            console=False,
+            disable_windowed_traceback=False,
+            argv_emulation=True,
+            target_arch=None,
+            codesign_identity=None,
+            entitlements_file=None,
+            icon="src/solsticelogo.ico"
+        )
+
+        app = BUNDLE(
+            exe,
+            name="MetaTagBackoffGui.app",
+            icon="src/solsticelogo.ico",
+            bundle_identifier="com.solstice.metatag",
+            info_plist={
+                "CFBundleShortVersionString": "1.0.0",
+                "CFBundleVersion": "1.0.0",
+                "LSMinimumSystemVersion": "10.13.0",
+                "NSHighResolutionCapable": True,
+            },
+        )' > MetaTag-macos.spec
+
+    - name: Build macOS app
+      run: |
+        pyinstaller MetaTag-macos.spec
+
+    - name: Create DMG
+      run: |
+        mkdir -p dist/dmg
+        mv "dist/MetaTagBackoffGui.app" dist/dmg/
+        hdiutil create -volname "MetaTag" -srcfolder dist/dmg -ov -format UDZO dist/MetaTag-Installer.dmg
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: MetaTag-macOS
+        path: |
+          dist/MetaTag-Installer.dmg
+          dist/dmg/MetaTagBackoffGui.app
