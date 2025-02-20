@@ -34,8 +34,26 @@ jobs:
         OPTIONS = {
             "argv_emulation": True,
             "iconfile": "src/solsticelogo.ico",
-            "packages": ["ttkbootstrap", "PIL", "google.generativeai", "iptcinfo3", "rawpy", "numpy"],
-            "includes": ["tkinter", "PIL._tkinter_finder"],
+            "packages": [
+                "ttkbootstrap",
+                "PIL",
+                "google",
+                "google.generativeai",
+                "google.auth",
+                "google.api_core",
+                "iptcinfo3",
+                "rawpy",
+                "numpy",
+                "tkinter"
+            ],
+            "includes": [
+                "tkinter",
+                "PIL._tkinter_finder",
+                "google.generativeai",
+                "google.auth",
+                "google.api_core"
+            ],
+            "excludes": ["matplotlib", "PyQt5", "PyQt6", "PySide2", "PySide6"],
             "frameworks": ["Tcl", "Tk"],
             "plist": {
                 "CFBundleName": "MetaTag",
@@ -50,6 +68,7 @@ jobs:
         }
 
         setup(
+            name="MetaTag",
             app=APP,
             data_files=DATA_FILES,
             options={"py2app": OPTIONS},
@@ -57,14 +76,9 @@ jobs:
         )
         ''' > setup.py
 
-    - name: List directory before build
-      run: |
-        ls -la src/
-
     - name: Build macOS app
       run: |
         python setup.py py2app
-        ls -la dist/
 
     - name: Create PKG installer
       run: |
