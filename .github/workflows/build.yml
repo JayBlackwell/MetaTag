@@ -85,5 +85,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: MetaTag-Windows
+        name: MetaTag-Windows-exe
         path: dist/MetaTagBackoffGui.exe
