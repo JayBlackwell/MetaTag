@@ -24,13 +24,30 @@ jobs:
         python -m pip install --upgrade pip
         pip install py2app
         pip install -r requirements.txt
+        pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
     - name: Create setup.py
       run: |
         echo '''from setuptools import setup
+        import os
+        import sys
+        from pathlib import Path
+
+        def collect_google_packages():
+            import google
+            google_path = os.path.dirname(google.__file__)
+            google_packages = []
+            for root, dirs, files in os.walk(google_path):
+                if "__pycache__" in root: continue
+                if ".dylib" in root: continue
+                if files and "__init__.py" in files:
+                    package = os.path.relpath(root, os.path.dirname(google_path))
+                    google_packages.append(package.replace("/", "."))
+            return google_packages
 
         APP = ["src/MetaTagBackoffGui.py"]
         DATA_FILES = [("", ["src/solsticelogo.ico"])]
+
         OPTIONS = {
             "argv_emulation": True,
             "iconfile": "src/solsticelogo.ico",
@@ -39,19 +56,18 @@ jobs:
                 "PIL",
                 "google",
                 "google.generativeai",
-                "google.auth",
                 "google.api_core",
+                "google.auth",
+                "google.oauth2",
+                "google_auth_oauthlib",
                 "iptcinfo3",
                 "rawpy",
                 "numpy",
-                "tkinter"
-            ],
+                "tkinter",
+            ] + collect_google_packages(),
             "includes": [
                 "tkinter",
                 "PIL._tkinter_finder",
-                "google.generativeai",
-                "google.auth",
-                "google.api_core"
             ],
             "excludes": ["matplotlib", "PyQt5", "PyQt6", "PySide2", "PySide6"],
             "frameworks": ["Tcl", "Tk"],
@@ -88,7 +104,7 @@ jobs:
                  --install-location "/Applications/MetaTag.app" \
                  dist/MetaTag.pkg
 
-    - name: Upload artifact
+    - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: MetaTag-macOS-pkg
