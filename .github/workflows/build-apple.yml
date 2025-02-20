@@ -1,4 +1,4 @@
-name: Build Apple App
+name: Build macOS App
 
 on:
   push:
@@ -12,7 +12,8 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
@@ -22,69 +23,17 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install py2app
           pip install -r requirements.txt
-          python -c "import google; print('Google package location:', google.__file__)"
-          python -c "import site; print('Site packages:', site.getsitepackages())"
+          # This ensures py2app is installed if not already listed in requirements.txt:
+          pip install py2app
 
-      - name: Create google namespace package dummy file
+      - name: Build macOS App with py2app
         run: |
-          mkdir -p google
-          echo "from pkg_resources import declare_namespace
-declare_namespace(__name__)" > google/__init__.py
+          python setup.py py2app
 
-      - name: Create setup.py
-        run: |
-          echo '''from setuptools import setup
-          import site
-
-          APP = ["src/MetaTagBackoffGui.py"]
-          DATA_FILES = [("", ["src/solsticelogo.ico"])]
-
-          OPTIONS = {
-              "argv_emulation": False,
-              "iconfile": "src/solsticelogo.ico",
-              "packages": ["google.generativeai", "ttkbootstrap", "PIL", "iptcinfo3", "rawpy", "numpy"],
-              "includes": ["tkinter", "PIL._tkinter_finder"],
-              "excludes": ["matplotlib", "PyQt5", "PyQt6", "PySide2", "PySide6"],
-              "site_packages": True,
-              "resources": ["src/solsticelogo.ico"],
-              "plist": {
-                  "CFBundleName": "MetaTag",
-                  "CFBundleDisplayName": "MetaTag",
-                  "CFBundleIdentifier": "com.solstice.metatag",
-                  "CFBundleVersion": "1.0.0",
-                  "CFBundleShortVersionString": "1.0.0",
-                  "LSMinimumSystemVersion": "10.13.0",
-                  "NSHighResolutionCapable": True
-              }
-          }
-
-          setup(
-              name="MetaTag",
-              app=APP,
-              data_files=DATA_FILES,
-              options={"py2app": OPTIONS},
-              setup_requires=["py2app"],
-              namespace_packages=["google"]
-          )
-          ''' > setup.py
-
-      - name: Build macOS app
-        run: |
-          python setup.py py2app --no-strip
-
-      - name: Create PKG installer
-        run: |
-          pkgbuild --root "dist/MetaTag.app" \
-                   --identifier com.solstice.metatag \
-                   --version 1.0.0 \
-                   --install-location "/Applications/MetaTag.app" \
-                   dist/MetaTag.pkg
-
-      - name: Upload artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MetaTag-macOS-pkg
-          path: dist/MetaTag.pkg
+          name: MetaTag-macOS-app
+          path: dist/
 
