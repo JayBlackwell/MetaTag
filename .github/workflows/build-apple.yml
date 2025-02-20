@@ -34,6 +34,9 @@ jobs:
         OPTIONS = {
             "argv_emulation": True,
             "iconfile": "src/solsticelogo.ico",
+            "packages": ["ttkbootstrap", "PIL", "google.generativeai", "iptcinfo3", "rawpy", "numpy"],
+            "includes": ["tkinter", "PIL._tkinter_finder"],
+            "frameworks": ["Tcl", "Tk"],
             "plist": {
                 "CFBundleName": "MetaTag",
                 "CFBundleDisplayName": "MetaTag",
@@ -42,6 +45,7 @@ jobs:
                 "CFBundleShortVersionString": "1.0.0",
                 "LSMinimumSystemVersion": "10.13.0",
                 "NSHighResolutionCapable": True,
+                "NSRequiresAquaSystemAppearance": False,
             }
         }
 
@@ -53,6 +57,10 @@ jobs:
         )
         ''' > setup.py
 
+    - name: List directory before build
+      run: |
+        ls -la src/
+
     - name: Build macOS app
       run: |
         python setup.py py2app
@@ -60,8 +68,11 @@ jobs:
 
     - name: Create PKG installer
       run: |
-        ls -la dist/
-        pkgbuild --root "dist/MetaTag.app" --identifier com.solstice.metatag --version 1.0.0 --install-location "/Applications/MetaTag.app" dist/MetaTag.pkg
+        pkgbuild --root "dist/MetaTag.app" \
+                 --identifier com.solstice.metatag \
+                 --version 1.0.0 \
+                 --install-location "/Applications/MetaTag.app" \
+                 dist/MetaTag.pkg
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
