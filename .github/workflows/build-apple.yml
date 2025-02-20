@@ -38,7 +38,7 @@ jobs:
         OPTIONS = {
             "argv_emulation": False,
             "iconfile": "src/solsticelogo.ico",
-            "packages": ["google", "ttkbootstrap", "PIL", "iptcinfo3", "rawpy", "numpy"],
+            "packages": ["google.generativeai", "ttkbootstrap", "PIL", "iptcinfo3", "rawpy", "numpy"],
             "includes": ["tkinter", "PIL._tkinter_finder"],
             "excludes": ["matplotlib", "PyQt5", "PyQt6", "PySide2", "PySide6"],
             "site_packages": True,
