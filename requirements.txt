@@ -1,5 +1,6 @@
 # UI Dependencies
 ttkbootstrap>=1.10.1
+py2app
 
 # Image Processing
 Pillow>=10.0.0
@@ -15,3 +16,5 @@ google
 # On Ubuntu/Debian: apt-get install libraw-dev
 # On macOS: brew install libraw
 # On Windows: Visual C++ build tools might be required
+
+
