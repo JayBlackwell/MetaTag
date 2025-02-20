@@ -24,10 +24,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install py2app
         pip install -r requirements.txt
+        python -c "import google; print('Google package location:', google.__file__)"
+        python -c "import site; print('Site packages:', site.getsitepackages())"
 
     - name: Create setup.py
       run: |
         echo '''from setuptools import setup
+        import site
 
         APP = ["src/MetaTagBackoffGui.py"]
         DATA_FILES = [("", ["src/solsticelogo.ico"])]
@@ -35,9 +38,10 @@ jobs:
         OPTIONS = {
             "argv_emulation": False,
             "iconfile": "src/solsticelogo.ico",
-            "packages": ["google.generativeai", "google.auth", "google.api_core", "ttkbootstrap", "PIL", "iptcinfo3", "rawpy", "numpy"],
+            "packages": ["google", "ttkbootstrap", "PIL", "iptcinfo3", "rawpy", "numpy"],
             "includes": ["tkinter", "PIL._tkinter_finder"],
             "excludes": ["matplotlib", "PyQt5", "PyQt6", "PySide2", "PySide6"],
+            "site_packages": True,
             "resources": ["src/solsticelogo.ico"],
             "plist": {
                 "CFBundleName": "MetaTag",
@@ -61,7 +65,7 @@ jobs:
 
     - name: Build macOS app
       run: |
-        python setup.py py2app
+        python setup.py py2app --no-strip
 
     - name: Create PKG installer
       run: |
