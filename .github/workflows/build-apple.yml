@@ -24,53 +24,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install py2app
         pip install -r requirements.txt
-        pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
     - name: Create setup.py
       run: |
         echo '''from setuptools import setup
-        import os
-        import sys
-        from pathlib import Path
-
-        def collect_google_packages():
-            import google
-            google_path = os.path.dirname(google.__file__)
-            google_packages = []
-            for root, dirs, files in os.walk(google_path):
-                if "__pycache__" in root: continue
-                if ".dylib" in root: continue
-                if files and "__init__.py" in files:
-                    package = os.path.relpath(root, os.path.dirname(google_path))
-                    google_packages.append(package.replace("/", "."))
-            return google_packages
 
         APP = ["src/MetaTagBackoffGui.py"]
         DATA_FILES = [("", ["src/solsticelogo.ico"])]
 
         OPTIONS = {
-            "argv_emulation": True,
+            "argv_emulation": False,
             "iconfile": "src/solsticelogo.ico",
-            "packages": [
-                "ttkbootstrap",
-                "PIL",
-                "google",
-                "google.generativeai",
-                "google.api_core",
-                "google.auth",
-                "google.oauth2",
-                "google_auth_oauthlib",
-                "iptcinfo3",
-                "rawpy",
-                "numpy",
-                "tkinter",
-            ] + collect_google_packages(),
-            "includes": [
-                "tkinter",
-                "PIL._tkinter_finder",
-            ],
+            "packages": ["google.generativeai", "google.auth", "google.api_core", "ttkbootstrap", "PIL", "iptcinfo3", "rawpy", "numpy"],
+            "includes": ["tkinter", "PIL._tkinter_finder"],
             "excludes": ["matplotlib", "PyQt5", "PyQt6", "PySide2", "PySide6"],
-            "frameworks": ["Tcl", "Tk"],
+            "resources": ["src/solsticelogo.ico"],
             "plist": {
                 "CFBundleName": "MetaTag",
                 "CFBundleDisplayName": "MetaTag",
@@ -79,7 +47,6 @@ jobs:
                 "CFBundleShortVersionString": "1.0.0",
                 "LSMinimumSystemVersion": "10.13.0",
                 "NSHighResolutionCapable": True,
-                "NSRequiresAquaSystemAppearance": False,
             }
         }
 
