@@ -8,13 +8,14 @@ rawpy>=0.17.0
 numpy>=1.24.0
 iptcinfo3>=2.1.4
 
-# Google AI
+# Google AI Dependencies
 google-generativeai>=0.3.0
-google
+google-api-core>=2.11.0
+google-auth>=2.22.0
+google-cloud-core>=2.3.2
+google-api-python-client>=2.0.0
 
 # Note: Some system-level dependencies might be required for rawpy:
 # On Ubuntu/Debian: apt-get install libraw-dev
 # On macOS: brew install libraw
 # On Windows: Visual C++ build tools might be required
-
-
